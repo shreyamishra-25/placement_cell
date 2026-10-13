@@ -1,0 +1,30 @@
+{% macro field(label, name, value='', type='text', errors=None, required=True) %}
+<label>{{ label }}<input type="{{ type }}" name="{{ name }}" value="{{ value if value is not none else '' }}" {% if required %}required{% endif %}{% for k, v in kwargs.items() %} {{ k }}="{{ v }}"{% endfor %}></label>
+{% if errors and errors.get(name) %}<div class="err">{{ errors[name] }}</div>{% endif %}
+{% endmacro %}
+
+{% macro select(label, name, options, selected='', errors=None, blank=None) %}
+<label>{{ label }}<select name="{{ name }}">
+{% if blank is not none %}<option value="">{{ blank }}</option>{% endif %}
+{% for v, t in options %}<option value="{{ v }}" {% if v|string == selected|string %}selected{% endif %}>{{ t }}</option>{% endfor %}
+</select></label>
+{% if errors and errors.get(name) %}<div class="err">{{ errors[name] }}</div>{% endif %}
+{% endmacro %}
+
+{% macro badge(v) %}<span class="badge {{ v|lower|replace('+','p') }}">{{ v|pretty }}</span>{% endmacro %}
+
+{% macro reasons(items) %}
+<ul class="reasons">{% for r in items %}{% set lvl = r[1:r.index(']')] if r.startswith('[') else 'ALLOW' %}<li class="r-{{ lvl }}">{{ r }}</li>{% endfor %}</ul>
+{% endmacro %}
+
+{% macro pager(pg, endpoint) %}
+<div class="pager">{% if pg.has_prev %}<a class="btn sec" href="{{ url_for(endpoint, page=pg.prev_num, **kwargs) }}">&laquo; Prev</a>{% endif %}
+<span class="muted">Page {{ pg.page }} of {{ pg.pages or 1 }} &middot; {{ pg.total }} record(s)</span>
+{% if pg.has_next %}<a class="btn sec" href="{{ url_for(endpoint, page=pg.next_num, **kwargs) }}">Next &raquo;</a>{% endif %}</div>
+{% endmacro %}
+
+{% macro options_box(opts) %}
+<p>{{ badge({'open': 'allow', 'restricted': 'review', 'closed': 'block'}[opts.status]) }}
+{% if opts.status == 'closed' %}Out of further drives.{% else %}May still attempt: <b>{{ opts.types|join(', ') }}</b>{% if opts.min_ctc %} &middot; FTE/I+F must pay at least <b>{{ opts.min_ctc }} LPA</b>{% endif %}{% endif %}</p>
+<ul class="muted">{% for n in opts.notes %}<li>{{ n }}</li>{% endfor %}</ul>
+{% endmacro %}

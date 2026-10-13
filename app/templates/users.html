@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% block title %}Users{% endblock %}
+{% block content %}
+<h1>User accounts</h1>
+<section class="card"><h2>New user</h2><form method="post" action="{{ url_for('admin.user_new') }}" class="stack">{{ csrf_input() }}<div class="cols">
+<label>Username<input name="username" maxlength="40" required></label>
+<label>Role<select name="role">{% for r in roles %}<option>{{ r }}</option>{% endfor %}</select></label>
+<label>Temporary password<input type="password" name="password" required maxlength="128"></label>
+<label>Coordinator course<select name="course"><option value="">-</option>{% for c, v in courses.items() %}<option value="{{ c }}">{{ v[0] }}</option>{% endfor %}</select></label>
+<label>Recruiter company<select name="company_id"><option value="">-</option>{% for c in companies %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></label>
+<label>Student login: Placement ID<input name="placement_id" maxlength="24"></label></div>
+<button>Create</button> <span class="muted">The user must change the temporary password at first sign-in.</span></form></section>
+<div class="scroll"><table><tr><th>User</th><th>Role</th><th>Scope</th><th>MFA</th><th>State</th><th>Last login</th><th>Actions</th></tr>
+{% for u in rows %}<tr><td>{{ u.username }}</td><td>{{ u.role }}</td><td>{{ u.course or ('company #' ~ u.company_id if u.company_id else ('student #' ~ u.student_id if u.student_id else '-')) }}</td><td>{{ 'on' if u.mfa_enabled else 'off' }}</td>
+<td>{% if not u.active %}<span class="badge bad">disabled</span>{% elif u.locked_until and u.locked_until > now %}<span class="badge warn">locked</span>{% else %}<span class="badge ok">active</span>{% endif %}{% if u.must_change_password %} <span class="badge plain">must change pw</span>{% endif %}</td>
+<td>{{ u.last_login|ist }}</td>
+<td><form method="post" action="{{ url_for('admin.user_action', uid=u.id) }}" class="row">{{ csrf_input() }}
+{% if u.active %}<button class="sec" name="action" value="disable">Disable</button>{% else %}<button class="sec" name="action" value="enable">Enable</button>{% endif %}
+<button class="sec" name="action" value="unlock">Unlock</button>
+<input type="password" name="password" placeholder="New temp password" maxlength="128"><button class="sec" name="action" value="reset">Reset password</button></form></td></tr>{% endfor %}</table></div>
+{% endblock %}

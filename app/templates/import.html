@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block title %}Import students{% endblock %}
+{% block content %}
+<h1>Import students (CSV)</h1>
+<section class="card"><p>Required columns: <code>{{ columns|join(', ') }}</code>. Optional: <code>registration_status, eligibility_status, remarks</code> (defaults: registered / pending verification).
+Every row is validated with the same rules as the form. <b>If any row fails, nothing is imported.</b> Max 1 MB and 2000 rows.</p>
+<form method="post" enctype="multipart/form-data" class="stack">{{ csrf_input() }}
+<label>CSV file<input type="file" name="file" accept=".csv,text/csv" required></label><button>Validate &amp; import</button></form></section>
+{% if result %}<section class="card">
+{% if result.errors %}<p class="flash error">Nothing imported. {{ result.errors|length }} problem(s):</p>
+<table><tr><th>Line</th><th>Problem</th></tr>{% for n, msg in result.errors %}<tr><td>{{ n }}</td><td>{{ msg }}</td></tr>{% endfor %}</table>
+{% else %}<p class="flash ok">Imported {{ result.imported }} student(s).</p>{% endif %}</section>{% endif %}
+{% endblock %}

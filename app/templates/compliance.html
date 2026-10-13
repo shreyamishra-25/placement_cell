@@ -1,0 +1,31 @@
+{% extends "base.html" %}{% from "_macros.html" import badge, options_box %}{% block title %}Compliance{% endblock %}
+{% block content %}
+<h1>Pending &amp; policy-compliance cases</h1>
+
+<h2>Possible policy conflicts ({{ conflicts|length }})</h2>
+<div class="scroll"><table><tr><th>Student</th><th>Offer</th><th>Why flagged</th></tr>
+{% for c in conflicts %}<tr><td><a href="{{ url_for('students.detail', sid=c.student.id) }}">{{ c.student.name }}</a> <span class="mono muted">{{ c.student.placement_id }}</span></td><td><a href="{{ url_for('offers.detail', oid=c.offer.id) }}">#{{ c.offer.id }} {{ c.offer.company.name }} ({{ c.offer.offer_type }})</a></td><td>{{ c.reasons|join(' ') }}</td></tr>
+{% else %}<tr><td colspan="3" class="muted">None. Every active combination of offers passes the switching rules.</td></tr>{% endfor %}</table></div>
+
+<h2>Offers awaiting acceptance ({{ pending|length }})</h2>
+<div class="scroll"><table><tr><th>Offer</th><th>Student</th><th>Company</th><th>Deadline</th><th>Policy</th></tr>
+{% for o in pending %}<tr><td><a href="{{ url_for('offers.detail', oid=o.id) }}">#{{ o.id }}</a></td><td>{{ o.student.name }}</td><td>{{ o.company.name }}</td><td>{{ o.acceptance_deadline|ist }}</td><td>{{ badge(o.review_status) }}</td></tr>
+{% else %}<tr><td colspan="5" class="muted">None.</td></tr>{% endfor %}</table></div>
+
+<h2>Accepted - joining pending ({{ joining|length }})</h2>
+<div class="scroll"><table><tr><th>Offer</th><th>Student</th><th>Company</th><th>Type</th><th>NOC</th></tr>
+{% for o in joining %}<tr><td><a href="{{ url_for('offers.detail', oid=o.id) }}">#{{ o.id }}</a></td><td>{{ o.student.name }}</td><td>{{ o.company.name }}</td><td>{{ o.offer_type }}</td><td>{{ o.noc_status|pretty }}</td></tr>
+{% else %}<tr><td colspan="5" class="muted">None.</td></tr>{% endfor %}</table></div>
+
+<h2>Awaiting policy review ({{ review|length }})</h2>
+<p>{% if review %}<a class="btn sec" href="{{ url_for('offers.reviews') }}">Open review queue</a>{% else %}<span class="muted">Queue is empty.</span>{% endif %}</p>
+
+<h2>Absenteeism flags ({{ flags|length }})</h2>
+<div class="scroll"><table><tr><th>Student</th><th>Missed</th><th>Excluded through</th></tr>
+{% for f in flags %}<tr><td>{{ f.student.name }} <span class="mono muted">{{ f.student.placement_id }}</span></td><td>{{ f.drive.title }} ({{ f.drive.drive_date }})</td><td>{% if f.excluded_through %}{{ f.excluded_through }} (next 3 drives){% else %}{{ f.remaining }} of the next 3 drives are scheduled so far{% endif %}</td></tr>
+{% else %}<tr><td colspan="3" class="muted">None.</td></tr>{% endfor %}</table></div>
+
+<h2>Students eligible for subsequent drives</h2>
+<div class="scroll"><table><tr><th>Student</th><th>Status</th><th>Placement</th><th>Open to</th><th>Minimum CTC</th></tr>
+{% for s, o in eligible %}<tr><td>{{ s.name }} <span class="mono muted">{{ s.placement_id }}</span></td><td>{{ badge({'open': 'allow', 'restricted': 'review', 'closed': 'block'}[o.status]) }}</td><td>{{ s.placement_status|pretty }}</td><td>{{ o.types|join(', ') or 'none' }}</td><td>{{ (o.min_ctc ~ ' LPA') if o.min_ctc else '-' }}</td></tr>{% endfor %}</table></div>
+{% endblock %}

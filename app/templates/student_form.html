@@ -1,0 +1,21 @@
+{% extends "base.html" %}{% from "_macros.html" import field, select %}{% block title %}{{ 'Edit' if s else 'New' }} student{% endblock %}
+{% block content %}
+<h1>{{ 'Edit ' ~ s.placement_id if s else 'New student' }}</h1>
+<section class="card"><form method="post" class="stack">{{ csrf_input() }}
+{% if s %}<input type="hidden" name="version" value="{{ s.version }}">
+<p class="muted">Placement ID is permanent. Placement status is calculated from offers and cannot be edited here.</p>
+{% else %}{{ field('Placement ID', 'placement_id', vals.placement_id, errors=errors, maxlength=24, placeholder='MTCS-25-001') }}{% endif %}
+<div class="cols">
+{{ field('Full name', 'name', vals.name, errors=errors, maxlength=100) }}
+{{ field('Mobile (10 digits)', 'mobile', vals.mobile, errors=errors, maxlength=20) }}
+{{ field('Email', 'email', vals.email, 'email', errors=errors, maxlength=254) }}
+{{ select('Programme', 'course', course_opts, vals.course, errors) }}
+{{ field('Batch (e.g. 2025-27)', 'batch', vals.batch, errors=errors, maxlength=7) }}
+{{ field('CGPA (0-10)', 'cgpa', vals.cgpa, errors=errors, maxlength=5) }}
+{{ field('Backlogs', 'backlogs', vals.backlogs, 'number', errors=errors, min=0, max=50) }}
+{{ select('Registration status', 'registration_status', reg_opts, vals.registration_status, errors) }}
+{{ select('Eligibility status', 'eligibility_status', elig_opts, vals.eligibility_status, errors) }}
+</div>
+<label>Remarks<textarea name="remarks" maxlength="500" rows="3">{{ vals.remarks }}</textarea></label>
+<button>Save</button> <a class="btn sec" href="{{ url_for('students.index') }}">Cancel</a></form></section>
+{% endblock %}

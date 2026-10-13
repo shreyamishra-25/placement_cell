@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}Verification code{% endblock %}
+{% block content %}
+<section class="card narrow"><h1>Verification code</h1>
+<form method="post" class="stack" autocomplete="off">{{ csrf_input() }}
+<label>6-digit code from your authenticator app<input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required autofocus></label>
+<button>Verify</button></form></section>
+{% endblock %}

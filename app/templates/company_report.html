@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block title %}Company report{% endblock %}
+{% block content %}
+<h1>Company-wise offers &amp; compensation</h1>
+<p class="muted">Accepted offers only for compensation figures. Annual CTC and internship stipend are reported in separate columns and never combined.</p>
+<div class="scroll"><table><tr><th>Company</th><th>Declared cat.</th><th>Offer categories seen</th><th class="num">Offers received</th><th class="num">Accepted</th><th class="num">Unique students</th><th class="num">Highest CTC</th><th class="num">Average CTC</th><th class="num">Median CTC</th><th class="num">Avg monthly stipend</th></tr>
+{% for r in rows %}<tr><td>{{ r.company.name }}</td><td>{{ r.company.category }}</td><td>{{ r.categories|join(', ') or '-' }}</td><td class="num">{{ r.offers }}</td><td class="num">{{ r.accepted }}</td><td class="num">{{ r.students }}</td>
+<td class="num">{{ r.fte.highest|lpa }}</td><td class="num">{{ r.fte.average|lpa }}</td><td class="num">{{ r.fte.median|lpa }}</td><td class="num">{{ r.stipend.average|inr }}</td></tr>
+{% else %}<tr><td colspan="10" class="muted">No data.</td></tr>{% endfor %}</table></div>
+{% endblock %}

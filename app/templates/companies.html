@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block title %}Companies{% endblock %}
+{% block content %}
+<div class="row"><h1>Recruiting organisations</h1>{% if has_perm('company.write') %}<a class="btn" href="{{ url_for('admin.company_form') }}">+ New company</a>{% endif %}
+<a class="btn sec" href="{{ url_for('admin.companies_report') }}">Company-wise report</a></div>
+<div class="scroll"><table><tr><th>Company</th><th>Declared category</th><th>Min CGPA</th><th>Max backlogs</th><th>Courses</th><th>Acceptance window</th><th>Status</th><th></th></tr>
+{% for c in rows %}<tr><td>{{ c.name }}</td><td>{{ c.category }}</td><td>{{ c.min_cgpa }}</td><td>{{ c.max_backlogs }}</td><td>{{ c.allowed_courses or 'all' }}</td><td>{{ c.timeline_hours ~ ' h' if c.timeline_hours else '24 h' }}</td><td>{{ 'active' if c.active else 'inactive' }}</td>
+<td>{% if has_perm('company.write') %}<a href="{{ url_for('admin.company_form', cid=c.id) }}">Edit</a>{% endif %}</td></tr>{% endfor %}</table></div>
+<p class="muted">The category an offer is judged by comes from its actual CTC (A+ &ge; 16, A 10-16, B 6-10, C &lt; 6 LPA); the declared category is used only for pre-drive checks when no CTC is known yet.</p>
+{% endblock %}

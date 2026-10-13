@@ -1,0 +1,33 @@
+{% extends "base.html" %}{% from "_macros.html" import badge, reasons %}{% block title %}Offer #{{ o.id }}{% endblock %}
+{% block content %}
+{% set vis = can_see('comp', o.student, o.company_id) %}
+<h1>Offer #{{ o.id }} &middot; {{ o.company.name }}</h1>
+<section class="card"><dl class="kv">
+<dt>Student</dt><dd>{% if has_perm('student.view') %}<a href="{{ url_for('students.detail', sid=o.student_id) }}">{{ o.student.name }}</a>{% else %}{{ o.student.name }}{% endif %} <span class="muted mono">{{ o.student.placement_id }}</span> ({{ o.student.course }})</dd>
+<dt>Type / category</dt><dd>{{ o.offer_type }} / {{ o.category or 'n/a (no CTC)' }}</dd>
+<dt>Annual CTC</dt><dd>{% if vis %}{{ o.ctc_lpa|lpa }}{% else %}<span class="mask">restricted</span>{% endif %}</dd>
+<dt>Internship stipend</dt><dd>{% if vis %}{% if o.stipend %}{{ o.stipend|inr }} ({{ o.stipend_period }}){% else %}-{% endif %}{% else %}<span class="mask">restricted</span>{% endif %}</dd>
+<dt>Offer date</dt><dd>{{ o.offer_date }}</dd><dt>Issued</dt><dd>{{ o.issued_at|ist }}</dd>
+<dt>Acceptance deadline</dt><dd>{{ o.acceptance_deadline|ist }} <span class="muted">(24 h or the company's timeline, whichever is earlier)</span></dd>
+<dt>Acceptance</dt><dd>{{ badge(o.acceptance) }}</dd><dt>Joining</dt><dd>{{ badge(o.joining_status) }}</dd>
+<dt>PPO</dt><dd>{{ o.ppo_status|pretty }}</dd>
+<dt>Off-campus / NOC</dt><dd>{{ 'yes' if o.off_campus else 'no' }} / {{ o.noc_status|pretty }}</dd>
+<dt>Policy decision</dt><dd>{{ badge(o.policy_decision) }} &rarr; {{ badge(o.review_status) }}</dd>
+{% if o.override_reason %}<dt>Review / override note</dt><dd>{{ o.override_reason }}</dd>{% endif %}
+{% if o.remarks %}<dt>Remarks</dt><dd>{{ o.remarks }}</dd>{% endif %}</dl></section>
+{% if has_perm('offer.write') %}<h2>Why the policy decided this</h2><section class="card">{{ reasons(reasons_list) }}</section>{% endif %}
+{% if has_perm('offer.write') %}
+<h2>Update</h2><section class="card"><form method="post" action="{{ url_for('offers.update', oid=o.id) }}" class="stack">{{ csrf_input() }}
+<div class="cols">
+<label>Acceptance<select name="acceptance"><option value="">- no change -</option>{% if o.acceptance == 'pending' %}<option value="accepted">accepted</option><option value="declined">declined</option>{% endif %}</select></label>
+<label>Joining<select name="joining_status"><option value="">- no change -</option><option value="joined">joined</option><option value="not_joined">not joined</option></select></label>
+{% if o.offer_type != 'F' %}<label>PPO status<select name="ppo_status"><option value="">- no change -</option>{% for p in ppo if p != 'not_applicable' %}<option value="{{ p }}">{{ p }}</option>{% endfor %}</select></label>{% endif %}
+{% if o.off_campus %}<label>NOC<select name="noc_status"><option value="">- no change -</option><option value="pending">pending</option><option value="obtained">obtained</option></select></label>{% endif %}
+</div><label>Remarks<input name="remarks" maxlength="500" value="{{ o.remarks or '' }}"></label>
+<button>Save changes</button></form>
+<p class="muted">An offer that is not accepted before its deadline expires automatically. Declined and expired offers release the student from switching restrictions.</p></section>{% endif %}
+{% if o.review_status == 'pending_review' and has_perm('offer.review') %}
+<h2>Policy review</h2><section class="card"><form method="post" action="{{ url_for('offers.review', oid=o.id) }}" class="stack">{{ csrf_input() }}
+<label>Decision note (min 5 characters)<input name="note" required minlength="5" maxlength="300"></label>
+<button name="action" value="approve">Approve offer</button> <button name="action" value="reject" class="danger">Reject offer</button></form></section>{% endif %}
+{% endblock %}

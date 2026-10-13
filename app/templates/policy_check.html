@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% from "_macros.html" import field, select, badge, reasons, options_box %}{% block title %}Policy check{% endblock %}
+{% block content %}
+<h1>Policy check (nothing is recorded)</h1>
+<p class="muted">See whether a student would be allowed, blocked or referred for review before a drive - and exactly why.</p>
+<section class="card"><form method="post" class="stack">{{ csrf_input() }}<div class="cols">
+{{ field('Student Placement ID', 'placement_id', form.get('placement_id', ''), maxlength=24) }}
+{{ select('Company', 'company_id', company_opts, form.get('company_id', ''), None, blank='- choose -') }}
+{{ select('Offer type', 'offer_type', [('I', 'I'), ('F', 'F'), ('I+F', 'I+F')], form.get('offer_type', ''), None, blank='- choose -') }}
+{{ field('Expected CTC (LPA, optional)', 'ctc_lpa', form.get('ctc_lpa', ''), required=False, maxlength=10) }}
+{{ select('Drive (optional)', 'drive_id', drive_opts, form.get('drive_id', ''), None, blank='- none -') }}
+</div><button>Check</button></form></section>
+{% if out %}<section class="card"><h2>{{ out.student.name }} &rarr; {{ out.company.name }} ({{ out.type }}): {{ badge(out.decision.decision) }}</h2>
+{{ reasons(out.decision.reasons) }}<h2>Still open to this student</h2>{{ options_box(out.options) }}</section>{% endif %}
+{% endblock %}

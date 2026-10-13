@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block title %}Sign in{% endblock %}
+{% block content %}
+<section class="card narrow"><h1>Sign in</h1>
+<form method="post" class="stack" autocomplete="off">{{ csrf_input() }}
+<input type="hidden" name="next" value="{{ next }}">
+<label>Username<input name="username" maxlength="40" required autofocus></label>
+<label>Password<input type="password" name="password" maxlength="200" required></label>
+<button>Sign in</button></form>
+<p class="muted">Authorised users only. Activity is logged.</p></section>
+{% endblock %}

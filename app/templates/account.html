@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% block title %}Account{% endblock %}
+{% block content %}
+<h1>Account &middot; {{ current_user.username }}</h1>
+<section class="card"><h2>Change password</h2>
+<p class="muted">At least 10 characters with upper- and lower-case letters, a digit and a symbol. Changing it signs out every other session.</p>
+<form method="post" action="{{ url_for('auth.change_password') }}" class="stack">{{ csrf_input() }}
+<div class="cols"><label>Current password<input type="password" name="current" required maxlength="200"></label>
+<label>New password<input type="password" name="new" required maxlength="128"></label></div>
+<button>Change password</button></form></section>
+<section class="card"><h2>Multi-factor authentication (TOTP)</h2>
+{% if current_user.mfa_enabled %}
+<p><span class="badge ok">enabled</span></p>
+<form method="post" action="{{ url_for('auth.mfa_disable') }}" class="stack">{{ csrf_input() }}
+<label>Confirm with your password<input type="password" name="current" required maxlength="200"></label>
+<button class="danger">Turn off MFA</button></form>
+{% else %}
+<p>Add this key to an authenticator app (Google Authenticator, Aegis, 1Password...), then enter the 6-digit code it shows.</p>
+<p>Key: <code>{{ mfa_secret }}</code></p><p class="muted">URI: <code>{{ mfa_uri }}</code></p>
+<form method="post" action="{{ url_for('auth.mfa_enable') }}" class="stack">{{ csrf_input() }}
+<label>Code<input name="code" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" required></label>
+<button>Turn on MFA</button></form>
+{% endif %}</section>
+{% endblock %}

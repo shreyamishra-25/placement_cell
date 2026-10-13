@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% from "_macros.html" import pager %}{% block title %}Audit log{% endblock %}
+{% block content %}
+{% set ok, n, bad, head = chain %}
+<h1>Audit log</h1>
+<section class="card"><b>Tamper check:</b>
+{% if ok %}<span class="badge ok">hash chain intact</span> {{ n }} entries verified.{% else %}<span class="badge bad">CHAIN BROKEN at entry {{ bad }}</span> The log has been altered or damaged.{% endif %}
+<div class="muted">Head hash (store a copy off-system to detect truncation): <code>{{ head }}</code></div></section>
+<form method="get" class="filters"><label>Action<select name="action"><option value="">All</option>{% for a in actions %}<option value="{{ a }}" {% if a == action %}selected{% endif %}>{{ a }}</option>{% endfor %}</select></label>
+<label>Actor<input name="actor" value="{{ actor }}" maxlength="40"></label><button>Filter</button></form>
+<div class="scroll"><table><tr><th>#</th><th>Time (UTC)</th><th>Actor</th><th>Action</th><th>Entity</th><th>Before</th><th>After</th><th>IP</th></tr>
+{% for r in pg.items %}<tr><td>{{ r.id }}</td><td class="mono">{{ r.ts }}</td><td>{{ r.actor_name }}{% if r.role %} <span class="muted">({{ r.role }})</span>{% endif %}</td><td>{{ r.action }}</td><td>{{ r.entity or '' }} {{ r.entity_id or '' }}</td><td class="mono">{{ r.old_value or '' }}</td><td class="mono">{{ r.new_value or '' }}</td><td>{{ r.ip or '' }}</td></tr>{% endfor %}</table></div>
+{{ pager(pg, 'admin.audit_view', action=action or None, actor=actor or None) }}
+{% endblock %}

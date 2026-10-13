@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% from "_macros.html" import field, select, badge, reasons %}{% block title %}Record offer{% endblock %}
+{% block content %}
+<h1>Record offer</h1>
+<p class="muted">Every offer is checked against the placement policy on the server before it is stored. Offers are never overwritten: each one is a separate history entry.</p>
+{% if decision %}<section class="card"><h2>Policy result: {{ badge(decision.decision) }}</h2>{{ reasons(decision.reasons) }}
+{% if decision.decision == 'BLOCK' and current_user.role == 'admin' %}<p class="muted">As administrator you may record it anyway by giving an override reason below (min 10 characters). The override is audited.</p>{% endif %}</section>{% endif %}
+<section class="card"><form method="post" class="stack">{{ csrf_input() }}
+<div class="cols">
+{{ field('Student Placement ID', 'placement_id', form.get('placement_id', ''), errors=errors, maxlength=24) }}
+{{ select('Company', 'company_id', company_opts, form.get('company_id', ''), errors, blank='- choose -') }}
+{{ select('Offer type', 'offer_type', [('I', 'I - Internship only'), ('F', 'F - FTE only'), ('I+F', 'I+F - Internship + PPO/FTE')], form.get('offer_type', ''), errors, blank='- choose -') }}
+{{ field('Annual CTC (LPA) - F and I+F', 'ctc_lpa', form.get('ctc_lpa', ''), errors=errors, required=False, maxlength=10) }}
+{{ field('Internship stipend - I and I+F', 'stipend', form.get('stipend', ''), errors=errors, required=False, maxlength=10) }}
+{{ select('Stipend period', 'stipend_period', [('monthly', 'monthly'), ('total', 'total')], form.get('stipend_period', 'monthly'), errors) }}
+{{ field('Offer date', 'offer_date', form.get('offer_date', ''), 'date', errors=errors, required=False) }}
+{{ select('Related drive (optional - used for absence check)', 'drive_id', drive_opts, form.get('drive_id', ''), errors, blank='- none -') }}
+</div>
+<label class="check"><input type="checkbox" name="off_campus" value="1" {% if form.get('off_campus') %}checked{% endif %}>Off-campus offer</label>
+{{ select('NOC status (off-campus only)', 'noc_status', [('pending', 'pending'), ('obtained', 'obtained')], form.get('noc_status', 'pending'), errors) }}
+<label>Remarks<textarea name="remarks" maxlength="500" rows="2">{{ form.get('remarks', '') }}</textarea></label>
+{% if current_user.role == 'admin' %}<label>Administrator override reason (only to record a BLOCKED / REVIEW offer)<input name="override_reason" maxlength="300" value="{{ form.get('override_reason', '') }}"></label>{% endif %}
+<button>Check policy &amp; record</button></form></section>
+{% endblock %}

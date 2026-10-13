@@ -1,0 +1,21 @@
+{% extends "base.html" %}{% from "_macros.html" import badge, pager %}{% block title %}Students{% endblock %}
+{% block content %}
+<div class="row"><h1>{{ 'Archived students' if archived else 'Students' }}</h1>
+{% if has_perm('student.write') %}<a class="btn" href="{{ url_for('students.new') }}">+ New student</a>{% endif %}
+{% if has_perm('student.import') %}<a class="btn sec" href="{{ url_for('students.import_csv') }}">Import CSV</a>{% endif %}
+{% if has_perm('student.export') %}<a class="btn sec" href="{{ url_for('students.export') }}">Export CSV</a>{% endif %}
+{% if current_user.role == 'admin' %}<a class="btn sec" href="{{ url_for('students.export', sensitive=1) }}">Export incl. contact &amp; CTC</a>{% endif %}
+{% if has_perm('student.archive') %}<a class="btn sec" href="{{ url_for('students.index', archived=(0 if archived else 1)) }}">{{ 'Show active' if archived else 'Show archived' }}</a>{% endif %}</div>
+<form method="get" class="filters">
+{% if archived %}<input type="hidden" name="archived" value="1">{% endif %}
+<label>Search<input name="term" value="{{ f.term }}" maxlength="50" placeholder="name, ID or email"></label>
+<label>Programme<select name="course"><option value="">All</option>{% for c, v in courses.items() %}<option value="{{ c }}" {% if f.course == c %}selected{% endif %}>{{ v[0] }}</option>{% endfor %}</select></label>
+<label>Batch<input name="batch" value="{{ f.batch }}" maxlength="7" placeholder="2025-27"></label>
+<label>Eligibility<select name="eligibility"><option value="">All</option>{% for v in ['eligible','ineligible','pending_verification'] %}<option value="{{ v }}" {% if f.eligibility == v %}selected{% endif %}>{{ v|pretty }}</option>{% endfor %}</select></label>
+<label>Placement<select name="placement"><option value="">All</option>{% for v in ['unplaced','internship_only','fte_only','internship_plus_fte'] %}<option value="{{ v }}" {% if f.placement == v %}selected{% endif %}>{{ v|pretty }}</option>{% endfor %}</select></label>
+<button>Filter</button></form>
+<div class="scroll"><table><tr><th>Placement ID</th><th>Name</th><th>Programme</th><th>Batch</th><th>Registration</th><th>Eligibility</th><th>Placement</th><th></th></tr>
+{% for s in pg.items %}<tr><td class="mono">{{ s.placement_id }}</td><td>{{ s.name }}</td><td>{{ s.course }}</td><td>{{ s.batch }}</td><td>{{ badge(s.registration_status) }}</td><td>{{ badge(s.eligibility_status) }}</td><td>{{ badge(s.placement_status) }}</td><td><a href="{{ url_for('students.detail', sid=s.id) }}">Open</a></td></tr>
+{% else %}<tr><td colspan="8" class="muted">No students match.</td></tr>{% endfor %}</table></div>
+{{ pager(pg, 'students.index', archived=(1 if archived else None), term=f.term or None, course=f.course or None, batch=f.batch or None, eligibility=f.eligibility or None, placement=f.placement or None) }}
+{% endblock %}

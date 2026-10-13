@@ -1,0 +1,34 @@
+{% extends "base.html" %}{% from "_macros.html" import badge, options_box %}{% block title %}{{ s.placement_id }}{% endblock %}
+{% block content %}
+<div class="row"><h1>{{ s.name }} <span class="muted mono">{{ s.placement_id }}</span></h1>
+{% if s.archived %}<span class="badge bad">archived</span>{% endif %}
+{% if has_perm('student.write') and not s.archived %}<a class="btn sec" href="{{ url_for('students.edit', sid=s.id) }}">Edit</a>{% endif %}
+{% if has_perm('offer.write') and not s.archived %}<a class="btn" href="{{ url_for('offers.new', placement_id=s.placement_id) }}">+ Record offer</a>{% endif %}</div>
+
+<section class="card"><dl class="kv">
+<dt>Programme</dt><dd>{{ s.course_name }}</dd><dt>Batch</dt><dd>{{ s.batch }}</dd>
+<dt>Mobile</dt><dd>{% if can_see('mobile', s) %}{{ s.mobile or '-' }}{% else %}<span class="mask">restricted</span>{% endif %}</dd>
+<dt>Email</dt><dd>{% if can_see('email', s) %}{{ s.email or '-' }}{% else %}<span class="mask">restricted</span>{% endif %}</dd>
+<dt>CGPA / backlogs</dt><dd>{{ s.cgpa }} / {{ s.backlogs }}</dd>
+<dt>Registration</dt><dd>{{ badge(s.registration_status) }}</dd><dt>Eligibility</dt><dd>{{ badge(s.eligibility_status) }}</dd>
+<dt>Placement status</dt><dd>{{ badge(s.placement_status) }} <span class="muted">(calculated from offers)</span></dd>
+{% if s.remarks %}<dt>Remarks</dt><dd>{{ s.remarks }}</dd>{% endif %}</dl></section>
+
+<h2>Eligibility for further drives</h2><section class="card">{{ options_box(opts) }}</section>
+
+<h2>Offer history</h2>
+<div class="scroll"><table><tr><th>#</th><th>Company</th><th>Type</th><th>Cat.</th><th>CTC</th><th>Stipend</th><th>Offer date</th><th>Acceptance</th><th>Joining</th><th>PPO</th><th>Policy</th><th></th></tr>
+{% for o in s.offers %}{% set vis = can_see('comp', s, o.company_id) %}<tr><td>{{ o.id }}</td><td>{{ o.company.name }}{% if o.off_campus %} <span class="badge plain">off-campus</span>{% endif %}</td><td>{{ o.offer_type }}</td><td>{{ o.category or '-' }}</td>
+<td>{% if vis %}{{ o.ctc_lpa|lpa }}{% else %}<span class="mask">restricted</span>{% endif %}</td>
+<td>{% if vis %}{% if o.stipend %}{{ o.stipend|inr }} / {{ o.stipend_period }}{% else %}-{% endif %}{% else %}<span class="mask">restricted</span>{% endif %}</td>
+<td>{{ o.offer_date }}</td><td>{{ badge(o.acceptance) }}</td><td>{{ badge(o.joining_status) }}</td><td>{{ o.ppo_status|pretty }}</td><td>{{ badge(o.review_status) }}</td><td><a href="{{ url_for('offers.detail', oid=o.id) }}">Open</a></td></tr>
+{% else %}<tr><td colspan="12" class="muted">No offers yet.</td></tr>{% endfor %}</table></div>
+
+{% if att %}<h2>Recruitment attendance</h2><div class="scroll"><table><tr><th>Date</th><th>Drive</th><th>Status</th><th>Exception</th></tr>
+{% for a in att %}<tr><td>{{ a.drive.drive_date }}</td><td>{{ a.drive.title }}</td><td>{{ badge('ok' if a.status == 'present' else 'bad') }} {{ a.status }}</td><td>{{ a.exception_reason or '-' }}</td></tr>{% endfor %}</table></div>{% endif %}
+
+{% if has_perm('student.archive') %}<h2>Record management</h2><section class="card row">
+{% if not s.archived %}<form method="post" action="{{ url_for('students.archive', sid=s.id) }}" class="row">{{ csrf_input() }}<input name="reason" placeholder="Reason for archiving" minlength="5" maxlength="200" required><button class="danger">Archive</button></form>
+<span class="muted">Archiving hides the record from normal views but keeps the full placement history.</span>
+{% elif has_perm('student.restore') and not s.anonymised %}<form method="post" action="{{ url_for('students.restore', sid=s.id) }}">{{ csrf_input() }}<button class="sec">Restore</button></form> <span class="muted">Archived: {{ s.archive_reason }}</span>{% else %}<span class="muted">Archived: {{ s.archive_reason }}</span>{% endif %}</section>{% endif %}
+{% endblock %}

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Placement Cell{% endblock %} - NFSU Placement</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body>
+<header class="top">
+  <a class="brand" href="{{ url_for('main.index') }}">NFSU Placement Cell <small>2026-27</small></a>
+  {% if current_user.is_authenticated %}
+  <nav>
+    {% if has_perm('dashboard.view') %}<a href="{{ url_for('admin.dashboard') }}">Dashboard</a>{% endif %}
+    {% if has_perm('student.view') %}<a href="{{ url_for('students.index') }}">{{ 'My record' if current_user.role == 'student' else 'Students' }}</a>{% endif %}
+    {% if has_perm('offer.view') %}<a href="{{ url_for('offers.index') }}">Offers</a>{% endif %}
+    {% if has_perm('company.view') %}<a href="{{ url_for('admin.companies') }}">Companies</a><a href="{{ url_for('admin.drives') }}">Drives</a>{% endif %}
+    {% if has_perm('policy.check') %}<a href="{{ url_for('offers.check') }}">Policy check</a>{% endif %}
+    {% if has_perm('report.compliance') %}<a href="{{ url_for('admin.compliance') }}">Compliance</a>{% endif %}
+    {% if has_perm('offer.review') %}<a href="{{ url_for('offers.reviews') }}">Reviews</a>{% endif %}
+    {% if has_perm('audit.view') %}<a href="{{ url_for('admin.audit_view') }}">Audit</a>{% endif %}
+    {% if has_perm('user.manage') %}<a href="{{ url_for('admin.users') }}">Users</a><a href="{{ url_for('admin.retention') }}">Retention</a>{% endif %}
+    <a href="{{ url_for('auth.account') }}">Account</a>
+    <form method="post" action="{{ url_for('auth.logout') }}" class="inline">{{ csrf_input() }}<button class="link">Sign out ({{ current_user.username }} &middot; {{ current_user.role }})</button></form>
+  </nav>
+  {% endif %}
+</header>
+<main>
+{% with msgs = get_flashed_messages(with_categories=true) %}{% for cat, m in msgs %}<div class="flash {{ cat }}">{{ m }}</div>{% endfor %}{% endwith %}
+{% block content %}{% endblock %}
+</main></body></html>

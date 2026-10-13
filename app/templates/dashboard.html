@@ -1,0 +1,43 @@
+{% extends "base.html" %}{% block title %}Dashboard{% endblock %}
+{% block content %}
+{% set t = st.totals %}
+<h1>Placement dashboard</h1>
+<div class="grid">
+  <div class="tile"><b>{{ t.total }}</b><span>Students (active records)</span></div>
+  <div class="tile"><b>{{ t.registered }}</b><span>Registered</span></div>
+  <div class="tile"><b>{{ t.eligible }}</b><span>Eligible</span></div>
+  <div class="tile"><b>{{ t.ineligible }}</b><span>Ineligible</span></div>
+  <div class="tile"><b>{{ t.pending_verification }}</b><span>Pending verification</span></div>
+  <div class="tile"><b>{{ t.placed }}</b><span>Unique placed students</span></div>
+  <div class="tile"><b>{{ t.unplaced }}</b><span>Unplaced</span></div>
+  <div class="tile"><b>{{ t.offers }}</b><span>Total offers received</span></div>
+</div>
+<p class="muted">"Unique placed" counts each student once; "offers received" counts every offer event, including declined and expired ones.</p>
+
+<div class="grid">
+  <div class="tile"><b>{{ t.I }}</b><span>Internship only</span></div>
+  <div class="tile"><b>{{ t.F }}</b><span>FTE only</span></div>
+  <div class="tile"><b>{{ t.IF }}</b><span>Internship + PPO/FTE</span></div>
+  <div class="tile"><b>{{ st.pending.acceptance }}</b><span>Offers awaiting acceptance</span></div>
+  <div class="tile"><b>{{ st.pending.joining }}</b><span>Accepted, joining pending</span></div>
+  <div class="tile"><b>{{ st.pending.review }}</b><span>Awaiting policy review</span></div>
+</div>
+
+<h2>Compensation (reported separately)</h2>
+<div class="grid">
+  <div class="card"><b>Annual FTE CTC (LPA)</b><p class="muted">One figure per placed student: their best accepted FTE.</p>
+    {% if st.fte.count %}<dl class="kv"><dt>Highest</dt><dd>{{ st.fte.highest|lpa }}</dd><dt>Average</dt><dd>{{ st.fte.average|lpa }}</dd><dt>Median</dt><dd>{{ st.fte.median|lpa }}</dd><dt>Students</dt><dd>{{ st.fte.count }}</dd></dl>{% else %}<p>No accepted FTE offers yet.</p>{% endif %}</div>
+  <div class="card"><b>Internship stipend (monthly)</b><p class="muted">Never mixed with annual CTC.</p>
+    {% if st.stipend.count %}<dl class="kv"><dt>Highest</dt><dd>{{ st.stipend.highest|inr }} / month</dd><dt>Average</dt><dd>{{ st.stipend.average|inr }} / month</dd><dt>Median</dt><dd>{{ st.stipend.median|inr }} / month</dd><dt>Offers</dt><dd>{{ st.stipend.count }}</dd></dl>{% else %}<p>No accepted internships with a monthly stipend yet.</p>{% endif %}</div>
+</div>
+
+<h2>Course-wise outcomes</h2>
+<div class="scroll"><table><tr><th>Programme</th><th class="num">Students</th><th class="num">Registered</th><th class="num">Eligible</th><th class="num">Placed (unique)</th><th class="num">Unplaced</th><th class="num">I only</th><th class="num">F only</th><th class="num">I + F</th><th class="num">Offers</th></tr>
+{% for r in st.by_course %}<tr><td>{{ r.name }}</td><td class="num">{{ r.total }}</td><td class="num">{{ r.registered }}</td><td class="num">{{ r.eligible }}</td><td class="num">{{ r.placed }}</td><td class="num">{{ r.unplaced }}</td><td class="num">{{ r.I }}</td><td class="num">{{ r.F }}</td><td class="num">{{ r.IF }}</td><td class="num">{{ r.offers }}</td></tr>{% endfor %}</table></div>
+
+<h2>Batch-wise outcomes</h2>
+<div class="scroll"><table><tr><th>Programme</th><th>Batch</th><th class="num">Students</th><th class="num">Placed (unique)</th><th class="num">Unplaced</th><th class="num">I only</th><th class="num">F only</th><th class="num">I + F</th><th class="num">Offers</th></tr>
+{% for r in st.by_batch %}<tr><td>{{ COURSES[r.course][0] }}</td><td>{{ r.batch }}</td><td class="num">{{ r.total }}</td><td class="num">{{ r.placed }}</td><td class="num">{{ r.unplaced }}</td><td class="num">{{ r.I }}</td><td class="num">{{ r.F }}</td><td class="num">{{ r.IF }}</td><td class="num">{{ r.offers }}</td></tr>{% endfor %}</table></div>
+<p class="row"><a class="btn sec" href="{{ url_for('admin.companies_report') }}">Company-wise report</a>
+{% if has_perm('report.compliance') %}<a class="btn sec" href="{{ url_for('admin.compliance') }}">Compliance &amp; next-drive eligibility</a>{% endif %}</p>
+{% endblock %}

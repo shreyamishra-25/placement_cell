@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% from "_macros.html" import field, select %}{% block title %}Drives{% endblock %}
+{% block content %}
+<h1>Recruitment drives &amp; activities</h1>
+{% if has_perm('drive.write') %}<section class="card"><form method="post" action="{{ url_for('admin.drive_new') }}" class="stack">{{ csrf_input() }}<div class="cols">
+<label>Company<select name="company_id" required><option value="">- choose -</option>{% for c in companies %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></label>
+<label>Activity<select name="activity">{% for a in activities %}<option>{{ a }}</option>{% endfor %}</select></label>
+<label>Title<input name="title" maxlength="100" required></label>
+<label>Date<input type="date" name="drive_date" value="{{ today }}" required></label></div><button>Add drive</button></form></section>{% endif %}
+<div class="scroll"><table><tr><th>Date</th><th>Company</th><th>Activity</th><th>Title</th><th></th></tr>
+{% for d in rows %}<tr><td>{{ d.drive_date }}</td><td>{{ d.company.name }}</td><td>{{ d.activity }}</td><td>{{ d.title }}</td><td><a href="{{ url_for('admin.drive_detail', did=d.id) }}">Attendance</a></td></tr>
+{% else %}<tr><td colspan="5" class="muted">No drives yet.</td></tr>{% endfor %}</table></div>
+{% endblock %}

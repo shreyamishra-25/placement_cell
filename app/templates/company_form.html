@@ -1,0 +1,15 @@
+{% extends "base.html" %}{% from "_macros.html" import field, select %}{% block title %}Company{% endblock %}
+{% block content %}
+<h1>{{ 'Edit ' ~ c.name if c else 'New company' }}</h1>
+<section class="card"><form method="post" class="stack">{{ csrf_input() }}<div class="cols">
+{{ field('Company name', 'name', (form.get('name') if form else (c.name if c else '')), errors=errors, maxlength=100) }}
+{{ select('Declared category', 'category', category_opts, (form.get('category') if form else (c.category if c else 'B')), errors) }}
+{{ field('Minimum CGPA', 'min_cgpa', (form.get('min_cgpa') if form else (c.min_cgpa if c else 0)), errors=errors, maxlength=5) }}
+{{ field('Maximum backlogs', 'max_backlogs', (form.get('max_backlogs') if form else (c.max_backlogs if c else 50)), 'number', errors=errors, min=0, max=50) }}
+{{ field('Acceptance window (hours, optional)', 'timeline_hours', (form.get('timeline_hours') if form else (c.timeline_hours if c and c.timeline_hours else '')), 'number', errors=errors, required=False, min=1, max=168) }}
+</div>
+<p><b>Programmes recruited</b> <span class="muted">(none ticked = all)</span></p>
+{% for code, cv in courses.items() %}<label class="check"><input type="checkbox" name="allowed_courses" value="{{ code }}" {% if code in selected %}checked{% endif %}>{{ cv[0] }}</label>{% endfor %}
+<label class="check"><input type="checkbox" name="active" value="1" {% if not c or c.active %}checked{% endif %}>Active</label>
+<button>Save</button> <a class="btn sec" href="{{ url_for('admin.companies') }}">Cancel</a></form></section>
+{% endblock %}

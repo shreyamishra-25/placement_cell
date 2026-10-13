@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% from "_macros.html" import badge, reasons %}{% block title %}Policy reviews{% endblock %}
+{% block content %}
+<h1>Offers referred for manual policy review</h1>
+<p class="muted">The system flags; the Placement Cell decides. Every decision needs a note and is audited.</p>
+{% for o, rs in pending %}<section class="card"><div class="row"><b>Offer #{{ o.id }}</b> {{ o.student.name }} <span class="mono muted">{{ o.student.placement_id }}</span> &rarr; {{ o.company.name }} ({{ o.offer_type }}{% if o.ctc_lpa %}, {{ o.ctc_lpa|lpa }}{% endif %})</div>
+{{ reasons(rs) }}
+<form method="post" action="{{ url_for('offers.review', oid=o.id) }}" class="row">{{ csrf_input() }}<input name="note" placeholder="Decision note (min 5 chars)" required minlength="5" maxlength="300">
+<button name="action" value="approve">Approve</button><button name="action" value="reject" class="danger">Reject</button></form></section>
+{% else %}<section class="card">Nothing is waiting for review.</section>{% endfor %}
+{% endblock %}

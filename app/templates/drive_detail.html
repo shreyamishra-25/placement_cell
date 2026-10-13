@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% from "_macros.html" import badge %}{% block title %}{{ d.title }}{% endblock %}
+{% block content %}
+<h1>{{ d.title }} <span class="muted">{{ d.drive_date }} &middot; {{ d.company.name }} &middot; {{ d.activity }}</span></h1>
+<p class="muted">An unexcused absence excludes the student from the next three drives (by date) and raises a REVIEW flag on any offer linked to those drives. Only an administrator can approve a policy-defined emergency exception.</p>
+{% if has_perm('attendance.write') %}<section class="card"><form method="post" action="{{ url_for('admin.attendance_mark', did=d.id) }}" class="row">{{ csrf_input() }}
+<input name="placement_id" placeholder="Placement ID" maxlength="24" required>
+<select name="status"><option>present</option><option>absent</option></select><button>Record</button></form></section>{% endif %}
+<div class="scroll"><table><tr><th>Student</th><th>Status</th><th>Exception</th><th></th></tr>
+{% for a in rows %}<tr><td>{{ a.student.name }} <span class="muted mono">{{ a.student.placement_id }}</span></td><td>{{ badge('ok' if a.status == 'present' else 'bad') }} {{ a.status }}</td>
+<td>{% if a.exception_granted %}{{ badge('ok') }} {{ a.exception_reason }}{% else %}-{% endif %}</td>
+<td>{% if a.status == 'absent' and not a.exception_granted and has_perm('attendance.exception') %}<form method="post" action="{{ url_for('admin.attendance_exception', aid=a.id) }}" class="row">{{ csrf_input() }}<input name="reason" placeholder="Emergency & evidence (min 10 chars)" minlength="10" maxlength="200" required><button class="sec">Approve exception</button></form>{% endif %}</td></tr>
+{% else %}<tr><td colspan="4" class="muted">No attendance recorded.</td></tr>{% endfor %}</table></div>
+{% endblock %}

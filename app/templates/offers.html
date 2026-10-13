@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% from "_macros.html" import badge, pager %}{% block title %}Offers{% endblock %}
+{% block content %}
+<div class="row"><h1>Offers{% if current_user.role == 'recruiter' %} &middot; your company{% endif %}</h1>
+{% if has_perm('offer.write') %}<a class="btn" href="{{ url_for('offers.new') }}">+ Record offer</a>{% endif %}</div>
+<form method="get" class="filters">
+<label>Type<select name="type"><option value="">All</option>{% for t in types %}<option value="{{ t }}" {% if f.type == t %}selected{% endif %}>{{ t }}</option>{% endfor %}</select></label>
+<label>Acceptance<select name="acceptance"><option value="">All</option>{% for a in acceptance %}<option value="{{ a }}" {% if f.acceptance == a %}selected{% endif %}>{{ a }}</option>{% endfor %}</select></label>
+{% if current_user.role != 'recruiter' %}<label>Company<select name="company"><option value="">All</option>{% for c in companies %}<option value="{{ c.id }}" {% if f.company == c.id|string %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></label>{% endif %}
+<button>Filter</button></form>
+<div class="scroll"><table><tr><th>#</th><th>Student</th><th>Company</th><th>Type</th><th>Cat.</th><th>CTC</th><th>Stipend</th><th>Deadline</th><th>Acceptance</th><th>Joining</th><th>Policy</th><th></th></tr>
+{% for o in pg.items %}{% set vis = can_see('comp', o.student, o.company_id) %}<tr><td>{{ o.id }}</td>
+<td>{{ o.student.name }}<br><span class="muted mono">{{ o.student.placement_id }}</span></td><td>{{ o.company.name }}</td><td>{{ o.offer_type }}</td><td>{{ o.category or '-' }}</td>
+<td>{% if vis %}{{ o.ctc_lpa|lpa }}{% else %}<span class="mask">restricted</span>{% endif %}</td>
+<td>{% if vis %}{% if o.stipend %}{{ o.stipend|inr }} / {{ o.stipend_period }}{% else %}-{% endif %}{% else %}<span class="mask">restricted</span>{% endif %}</td>
+<td>{{ o.acceptance_deadline|ist if o.acceptance == 'pending' else '-' }}</td><td>{{ badge(o.acceptance) }}</td><td>{{ badge(o.joining_status) }}</td><td>{{ badge(o.review_status) }}</td><td><a href="{{ url_for('offers.detail', oid=o.id) }}">Open</a></td></tr>
+{% else %}<tr><td colspan="12" class="muted">No offers.</td></tr>{% endfor %}</table></div>
+{{ pager(pg, 'offers.index', type=f.type or None, acceptance=f.acceptance or None, company=f.company or None) }}
+{% endblock %}

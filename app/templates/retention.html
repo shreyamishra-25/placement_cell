@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block title %}Retention{% endblock %}
+{% block content %}
+<h1>Data retention</h1>
+<section class="card"><p>Policy: archived student records are anonymised <b>{{ years }} years</b> after the batch's graduation year. Name, mobile, email and remarks are erased; offers, companies and compensation stay so statistics remain correct. The linked login is disabled. Anonymisation cannot be undone.</p></section>
+<div class="scroll"><table><tr><th>Placement ID</th><th>Name</th><th>Batch</th><th>Archived</th></tr>
+{% for s in rows %}<tr><td class="mono">{{ s.placement_id }}</td><td>{{ s.name }}</td><td>{{ s.batch }}</td><td>{{ s.archived_at|ist }}</td></tr>{% else %}<tr><td colspan="4" class="muted">No records are due for anonymisation.</td></tr>{% endfor %}</table></div>
+{% if rows %}<form method="post" action="{{ url_for('admin.retention_run') }}">{{ csrf_input() }}<p><button class="danger">Anonymise {{ rows|length }} record(s)</button></p></form>{% endif %}
+{% endblock %}
