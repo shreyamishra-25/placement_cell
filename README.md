@@ -23,8 +23,10 @@ Starting without demo data: `python3 -m flask --app run create-admin --username 
 | `recruiter.zenith` | `Recruit@Placement1` | Company / Recruiter | read-only, **own company's offers only**, no contact data |
 | `student1` / `student2` | `Student@Placement1` | Student | own record only, read-only |
 
+**Logo:** save the official NFSU logo as `app/static/img/nfsu-logo.png` (or .svg/.jpg/.webp) and refresh - it replaces the placeholder badge in the header.
+
 ## What to demo (3 minutes)
-1. **Policy engine** - *Policy check*: `MTAI-25-003` (Kiwi, 8 LPA = B) → Praxis 9 LPA is **BLOCK** (needs ≥ 12 = 1.5×); Zenith 17 LPA is **ALLOW**. `MTAI-25-001` (I+F A+) is blocked from everything. Every answer lists the reasons.
+1. **Policy engine** - *Policy check*: pick a student who holds a B-category FTE (see Offers) → Praxis 9 LPA is **BLOCK** (needs ≥ 12 = 1.5×); Zenith 17 LPA is **ALLOW**. `MTAI-25-001` (I+F A+) is blocked from everything. Every answer lists the reasons.
 2. **Referral** - *Reviews*: `MSCS-25-002` (eligibility pending) and `MSDF-25-002` (unexcused absence, next-3-drives rule) are referred, not decided. Admin approves/rejects with a note.
 3. **Dashboard** - unique placed students vs total offers; CTC and stipend shown separately; course- and batch-wise tables.
 4. **Compliance** - pending acceptance, joining pending, conflicts, absentee flags, and what each student may still attempt.

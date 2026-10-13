@@ -1,14 +1,15 @@
 {% extends "base.html" %}{% block title %}Dashboard{% endblock %}
 {% block content %}
 {% set t = st.totals %}
-<h1>Placement dashboard</h1>
-<div class="grid">
+<section class="hero"><div><h1>Placement dashboard</h1><p>Welcome, {{ current_user.username }}. Session 2026-27 at a glance.</p></div>
+<div class="hero-stat"><b>{{ ((t.placed / t.total * 100)|round(0)|int) if t.total else 0 }}%</b><span>placed (unique students)</span><progress max="{{ t.total or 1 }}" value="{{ t.placed }}"></progress></div></section>
+<div class="grid g4">
   <div class="tile"><b>{{ t.total }}</b><span>Students (active records)</span></div>
   <div class="tile"><b>{{ t.registered }}</b><span>Registered</span></div>
   <div class="tile"><b>{{ t.eligible }}</b><span>Eligible</span></div>
-  <div class="tile"><b>{{ t.ineligible }}</b><span>Ineligible</span></div>
-  <div class="tile"><b>{{ t.pending_verification }}</b><span>Pending verification</span></div>
-  <div class="tile"><b>{{ t.placed }}</b><span>Unique placed students</span></div>
+  <div class="tile bad"><b>{{ t.ineligible }}</b><span>Ineligible</span></div>
+  <div class="tile warn"><b>{{ t.pending_verification }}</b><span>Pending verification</span></div>
+  <div class="tile good"><b>{{ t.placed }}</b><span>Unique placed students</span></div>
   <div class="tile"><b>{{ t.unplaced }}</b><span>Unplaced</span></div>
   <div class="tile"><b>{{ t.offers }}</b><span>Total offers received</span></div>
 </div>
@@ -18,9 +19,9 @@
   <div class="tile"><b>{{ t.I }}</b><span>Internship only</span></div>
   <div class="tile"><b>{{ t.F }}</b><span>FTE only</span></div>
   <div class="tile"><b>{{ t.IF }}</b><span>Internship + PPO/FTE</span></div>
-  <div class="tile"><b>{{ st.pending.acceptance }}</b><span>Offers awaiting acceptance</span></div>
-  <div class="tile"><b>{{ st.pending.joining }}</b><span>Accepted, joining pending</span></div>
-  <div class="tile"><b>{{ st.pending.review }}</b><span>Awaiting policy review</span></div>
+  <div class="tile warn"><b>{{ st.pending.acceptance }}</b><span>Offers awaiting acceptance</span></div>
+  <div class="tile warn"><b>{{ st.pending.joining }}</b><span>Accepted, joining pending</span></div>
+  <div class="tile warn"><b>{{ st.pending.review }}</b><span>Awaiting policy review</span></div>
 </div>
 
 <h2>Compensation (reported separately)</h2>
@@ -33,7 +34,7 @@
 
 <h2>Course-wise outcomes</h2>
 <div class="scroll"><table><tr><th>Programme</th><th class="num">Students</th><th class="num">Registered</th><th class="num">Eligible</th><th class="num">Placed (unique)</th><th class="num">Unplaced</th><th class="num">I only</th><th class="num">F only</th><th class="num">I + F</th><th class="num">Offers</th></tr>
-{% for r in st.by_course %}<tr><td>{{ r.name }}</td><td class="num">{{ r.total }}</td><td class="num">{{ r.registered }}</td><td class="num">{{ r.eligible }}</td><td class="num">{{ r.placed }}</td><td class="num">{{ r.unplaced }}</td><td class="num">{{ r.I }}</td><td class="num">{{ r.F }}</td><td class="num">{{ r.IF }}</td><td class="num">{{ r.offers }}</td></tr>{% endfor %}</table></div>
+{% for r in st.by_course %}<tr><td>{{ r.name }}</td><td class="num">{{ r.total }}</td><td class="num">{{ r.registered }}</td><td class="num">{{ r.eligible }}</td><td class="num">{{ r.placed }} <progress max="{{ r.total or 1 }}" value="{{ r.placed }}"></progress></td><td class="num">{{ r.unplaced }}</td><td class="num">{{ r.I }}</td><td class="num">{{ r.F }}</td><td class="num">{{ r.IF }}</td><td class="num">{{ r.offers }}</td></tr>{% endfor %}</table></div>
 
 <h2>Batch-wise outcomes</h2>
 <div class="scroll"><table><tr><th>Programme</th><th>Batch</th><th class="num">Students</th><th class="num">Placed (unique)</th><th class="num">Unplaced</th><th class="num">I only</th><th class="num">F only</th><th class="num">I + F</th><th class="num">Offers</th></tr>

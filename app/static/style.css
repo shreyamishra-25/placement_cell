@@ -49,3 +49,54 @@ dl.kv{display:grid;grid-template-columns:max-content 1fr;gap:.3rem 1.2rem;margin
 .pager{display:flex;gap:.5rem;margin:.8rem 0;align-items:center}
 code,.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem;word-break:break-all}
 .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+
+/* ---- NFSU theme ---- */
+:root{--brand:#0b2a5b;--brand2:#e6ecf7;--accent:#b3202a;--gold:#d9a400}
+.utility{background:#071c3f;color:#c9d6ee;font-size:.76rem;display:flex;flex-wrap:wrap;justify-content:space-between;gap:.2rem 1rem;padding:.3rem 1.25rem}
+header.top{background:#fff;color:var(--ink);border-bottom:4px solid var(--accent);padding:.7rem 1.25rem;justify-content:space-between}
+header.top a{color:var(--brand)}
+.brand{display:flex;align-items:center;gap:.8rem;text-decoration:none}
+.brand-text b{display:block;font-size:1.05rem;color:var(--brand);letter-spacing:.01em}
+.brand-text small{display:block;margin:0;opacity:1;color:var(--accent);font-weight:600;font-size:.8rem}
+.logo{height:54px;width:auto;display:block}
+.mono-logo{display:flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;font-size:.8rem;border:3px solid var(--gold)}
+.who{display:flex;align-items:center;gap:.6rem;font-weight:600;color:var(--brand)}
+.who small{display:block;font-weight:400;color:var(--mute);font-size:.72rem}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center}
+button.signout{background:var(--accent);padding:.35rem .8rem;font-size:.85rem}
+nav.menu{background:var(--brand);display:flex;flex-wrap:wrap;gap:0;padding:0 .8rem;margin:0}
+nav.menu a{color:#fff;text-decoration:none;padding:.65rem .9rem;font-size:.9rem;font-weight:500;border-bottom:3px solid transparent}
+nav.menu a:hover{background:#12397a;border-bottom-color:var(--gold);text-decoration:none}
+.hero{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;background:linear-gradient(120deg,#0b2a5b,#1b4a95);color:#fff;border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.1rem}
+.hero h1{margin:0;color:#fff}.hero p{margin:.2rem 0 0;color:#cfdcf3}
+.hero-stat{min-width:200px}.hero-stat b{font-size:2rem;display:block}.hero-stat span{font-size:.8rem;color:#cfdcf3}
+progress{width:100%;height:8px;accent-color:var(--gold);vertical-align:middle}
+td progress{width:70px;margin-left:.4rem}
+.tile{border-left:4px solid var(--brand);box-shadow:0 1px 3px rgba(11,42,91,.08)}
+.tile.good{border-left-color:var(--ok)}.tile.warn{border-left-color:var(--gold)}.tile.bad{border-left-color:var(--accent)}
+.tile b{color:var(--brand)}
+h2{color:var(--brand);border-bottom:2px solid var(--brand2);padding-bottom:.25rem}
+th{background:var(--brand);color:#fff}
+button,.btn{background:var(--brand)}button.sec,.btn.sec{color:var(--brand);border-color:var(--brand);background:#fff}
+.login{display:grid;grid-template-columns:1.1fr 1fr;gap:1.5rem;align-items:stretch;max-width:900px;margin:2rem auto}
+.login-art{background:linear-gradient(150deg,#0b2a5b,#1b4a95);color:#fff;border-radius:12px;padding:2rem}
+.login-art h1{color:#fff;font-size:1.6rem}.login-art p,.login-art li{color:#cfdcf3}.login-art ul{padding-left:1.1rem}
+.login-form{margin:0;align-self:center}
+.foot{text-align:center;color:var(--mute);font-size:.78rem;padding:1.5rem 1rem}
+@media(max-width:700px){.login{grid-template-columns:1fr}.utility{display:none}}
+.grid.g4{grid-template-columns:repeat(4,1fr)}@media(max-width:700px){.grid.g4{grid-template-columns:repeat(2,1fr)}}
+
+/* ---- NFSU palette (from the official logo: indigo / red / gold) ---- */
+:root{--brand:#322b6a;--brand2:#ebe9f5;--accent:#c02222;--gold:#cdad68}
+.utility{background:#221d4a;color:#e4dcc2}
+header.top{border-bottom:4px solid var(--gold);padding:.5rem 1.25rem}
+.logo{height:72px}
+.brand-text b{color:var(--brand)}.brand-text small{color:var(--accent)}
+nav.menu{background:var(--brand);border-bottom:3px solid var(--accent)}
+nav.menu a:hover{background:#40388a;border-bottom-color:var(--gold)}
+.hero,.login-art{background:linear-gradient(120deg,#322b6a,#4a3f94)}
+.hero p,.hero-stat span,.login-art p,.login-art li{color:#e4dcc2}
+progress{accent-color:var(--gold)}
+.avatar{background:var(--brand)}button.signout,.badge.block{background-color:var(--accent)}
+.badge.block{background:var(--errbg)}
+a{color:#322b6a}

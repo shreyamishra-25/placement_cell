@@ -4,7 +4,7 @@ import secrets
 from datetime import timedelta
 
 from cryptography.fernet import Fernet
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFError, CSRFProtect, generate_csrf
 from markupsafe import Markup, escape
@@ -101,6 +101,14 @@ def create_app(overrides=None):
             COURSES=COURSES,
         )
 
+    def logo_url():
+        # Drop the official logo at app/static/img/nfsu-logo.(png|svg|jpg|webp); a neutral monogram shows until then.
+        for ext in ("png", "svg", "jpg", "jpeg", "webp"):
+            if os.path.exists(os.path.join(app.static_folder, "img", f"nfsu-logo.{ext}")):
+                return url_for("static", filename=f"img/nfsu-logo.{ext}")
+        return None
+
+    app.jinja_env.globals["logo_url"] = logo_url
     app.jinja_env.globals["csrf_input"] = lambda: Markup(
         f'<input type="hidden" name="csrf_token" value="{escape(generate_csrf())}">')
 

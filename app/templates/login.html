@@ -1,10 +1,14 @@
 {% extends "base.html" %}{% block title %}Sign in{% endblock %}
 {% block content %}
-<section class="card narrow"><h1>Sign in</h1>
-<form method="post" class="stack" autocomplete="off">{{ csrf_input() }}
-<input type="hidden" name="next" value="{{ next }}">
-<label>Username<input name="username" maxlength="40" required autofocus></label>
-<label>Password<input type="password" name="password" maxlength="200" required></label>
-<button>Sign in</button></form>
-<p class="muted">Authorised users only. Activity is logged.</p></section>
+<section class="login">
+  <div class="login-art"><h1>Student Placement<br>Management System</h1><p>Policy-driven offer tracking, eligibility checks and a tamper-evident audit trail for the NFSU Training &amp; Placement Cell.</p>
+    <ul><li>Server-side policy decisions with reasons</li><li>Role-based, course-scoped access</li><li>Encrypted personal and salary data</li></ul></div>
+  <div class="card login-form"><h2>Sign in</h2>
+    <form method="post" class="stack" autocomplete="off">{{ csrf_input() }}
+    <input type="hidden" name="next" value="{{ next }}">
+    <label>Username<input name="username" maxlength="40" required autofocus></label>
+    <label>Password<input type="password" name="password" maxlength="200" required></label>
+    <button>Sign in</button></form>
+    <p class="muted">Authorised users only. Activity is logged.</p></div>
+</section>
 {% endblock %}
